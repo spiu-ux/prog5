@@ -1,0 +1,88 @@
+package town;
+
+import com.opencsv.bean.CsvDate;
+import com.opencsv.bean.CsvRecurse;
+
+
+public class City implements Comparable<City>{
+    private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+    private String name; //Поле не может быть null, Строка не может быть пустой
+    @CsvRecurse
+    private Coordinates coordinates; //Поле не может быть null
+    @CsvDate("yyyy-MM-dd HH:mm:ss")
+    private java.time.LocalDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    private float area; //Значение поля должно быть больше 0
+    private Long population; //Значение поля должно быть больше 0, Поле не может быть null
+    private double metersAboveSeaLevel;
+    private Boolean capital; //Поле может быть null
+    private Government government; //Поле может быть null
+    private StandardOfLiving standardOfLiving; //Поле не может быть null
+    @CsvRecurse
+    private Human governor; //Поле не может быть null
+    static Integer count = 0;
+    static public boolean isLoading = false;
+
+    public City(){
+        if(isLoading) {
+            return;
+        }
+            this.id = count++;
+            this.creationDate = java.time.LocalDateTime.now();
+            this.governor = new Human();
+            this.name = Waiter.getString("Название города");
+            this.area = Waiter.getFloat("Площадь", true);
+            this.population = Waiter.getLong("Население");
+            this.metersAboveSeaLevel = Waiter.getDouble("Высота над уровнем моря");
+            this.capital = Waiter.getBoolean(this.name);
+            this.government = Waiter.enumChoice("Government", Government.class, Government.values());
+            this.standardOfLiving = Waiter.enumChoice("StandartOfLiving", StandardOfLiving.class, StandardOfLiving.values());
+            this.coordinates = new Coordinates();
+    }
+    public void update() {
+        System.out.println(
+                "Какое поле обновить?\n" +
+                        "1. Имя\n" +
+                        "2. Координаты\n" +
+                        "3. Площадь\n" +
+                        "4. Население\n" +
+                        "5. Метры над уровнем моря\n"+
+                        "6. Столица\n"+
+                        "7. Правительство\n"+
+                        "8. Уровень жизни\n"+
+                        "9. Губернатор");
+        int n = 0;
+        while(n<1||n>9){
+            n=Waiter.getInteger("Какой id");
+        }
+           switch (n) {
+               case 1 -> this.name = Waiter.getString("Имя");
+               case 2 -> this.coordinates = new Coordinates();
+               case 3 -> this.area = Waiter.getFloat("Площадь",true);
+               case 4 -> this.population = Waiter.getLong("Население");
+               case 5 -> this.metersAboveSeaLevel = Waiter.getDouble("Высота над уровнем моря");
+               case 6 -> this.capital = Waiter.getBoolean("Столица");
+               case 7 -> this.government = Waiter.enumChoice("Правительство", Government.class, Government.values());
+               case 8 -> this.standardOfLiving = Waiter.enumChoice("Уровень жизни", StandardOfLiving.class, StandardOfLiving.values());
+               case 9 -> this.governor = new Human();
+           }
+        System.out.println("Изменено!");
+    }
+    public String toString() {
+        return String.format("id %s: Название %s", id, name);
+    }
+    public Integer getId(){
+        return id;
+    }
+    public String getName(){
+        return name;
+    }
+    public  Human getGovernor(){
+        return governor;
+    }
+    public int compareTo(City c) {
+        return Long.compare(this.population, c.population);
+    }
+    public Boolean getCapital(){
+        return capital;
+    }
+}
