@@ -1,6 +1,9 @@
 package command;
 import java.util.HashMap;
 
+/**
+ * Класс, отвечающий за выполнение команд
+ */
 public class Invoker {
     static HashMap<String, Command> command =new HashMap<>();
 
@@ -25,11 +28,14 @@ public class Invoker {
         command.put("save", new SaveCommand());
         command.put("load",new LoadCommand());
 
-
         command.put("executeScript", new ExecuteScriptCommand());
 
     }
-
+    /**
+     * Выполнить указанную команду
+     * @param name String name of the command
+     * @param args command arguments
+     */
     public static void executeCommand(String name,String[] args){
         command.get(name).execute(args);
     }

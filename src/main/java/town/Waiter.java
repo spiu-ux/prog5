@@ -1,14 +1,22 @@
 package town;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
-
+/**
+ * Класс для интерактивного ввода данных от пользователя
+ */
 public class Waiter {
     //enumы, Long, Double, String, boolean
+    /** Сканер для чтения ввода пользователя. */
     public static Scanner sc = new Scanner(System.in);
-
+    /**
+     * Запрашивает у пользователя выбор значения из перечисления.
+     * @param name название поля для вывода пользователю
+     * @param enumClass класс перечисления
+     * @param constants массив допустимых значений перечисления
+     * @param <E> тип перечисления
+     * @return выбранное значение перечисления
+     */
     public static <E extends Enum<E>> E enumChoice(String name, Class<E> enumClass, E[] constants) {
         System.out.println("\nВыберите " + name + ":");
         System.out.print("Доступные значения: ");
@@ -37,6 +45,11 @@ public class Waiter {
             }
         }
     }
+    /**
+     * Запрашивает у пользователя целое число больше 0.
+     * @param name название поля для вывода пользователю
+     * @return введённое целое число
+     */
     public static Integer getInteger(String name){
         Integer input;
         System.out.println("Введите число > 0 "+ name + ":" );
@@ -53,6 +66,10 @@ public class Waiter {
             }
         }
     }
+    /**
+     * Запрашивает у пользователя дату в формате ГГГГ-ММ-ДД.
+     * @return введённая дата
+     */
     public static java.time.LocalDate getDate(){
        System.out.println("Введите дату (ГГГГ-ММ-ДД): ");
        while (true){
@@ -65,6 +82,12 @@ public class Waiter {
             }
        }
     }
+    /**
+     * Запрашивает у пользователя число типа {@code float}.
+     * @param name название поля для вывода пользователю
+     * @param isPositive флаг, требующий при значении числа < 0 {@code false} или при значении числа > 0 {@code true}.
+     * @return введённое число
+     */
     public static float getFloat(String name,boolean isPositive){
         float input;
         System.out.println("Введите число "+ name + ":" );
@@ -84,6 +107,11 @@ public class Waiter {
             }
         }
     }
+    /**
+     * Запрашивает у пользователя число типа {@code double}.
+     * @param name название поля для вывода пользователю
+     * @return введённое число
+     */
     public static double getDouble(String name){
         double input;
         System.out.println("Введите число "+ name + ":" );
@@ -97,6 +125,11 @@ public class Waiter {
             }
         }
     }
+    /**
+     * Запрашивает у пользователя непустую строку.
+     * @param name название поля для вывода пользователю
+     * @return введённая строка
+     */
     public static String getString(String name){
         String input;
         System.out.println("Введите "+ name + ":" );
@@ -109,6 +142,11 @@ public class Waiter {
             System.out.println("Строка не может быть пустой!!!!!");
         }
     }
+    /**
+     * Запрашивает у пользователя целое число типа {@code Long} > 0.
+     * @param name название поля для вывода пользователю
+     * @return введённое число
+     */
     public static Long getLong(String name){
         Long input;
         System.out.println("Введите число > 0 "+ name + ":" );
@@ -125,6 +163,11 @@ public class Waiter {
             }
         }
     }
+    /**
+     * Запрашивает у пользователя {@code boolean} значение,{@code false} по умолчанию.
+     * @param name название поля для вывода пользователю
+     * @return введённое значение
+     */
     public static Boolean getBoolean(String name){
         System.out.println("Является ли "+ name + " столицей? (true/False)" );
         while(true){

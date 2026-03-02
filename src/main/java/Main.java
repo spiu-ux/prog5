@@ -1,6 +1,5 @@
 import command.Invoker;
 import town.Waiter;
-
 import java.util.Arrays;
 import java.util.Scanner;
 

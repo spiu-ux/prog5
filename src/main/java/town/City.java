@@ -3,7 +3,9 @@ package town;
 import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvRecurse;
 
-
+/**
+ * Route class - главный класс коллекции
+ */
 public class City implements Comparable<City>{
     private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
@@ -20,6 +22,9 @@ public class City implements Comparable<City>{
     @CsvRecurse
     private Human governor; //Поле не может быть null
     static Integer count = 0;
+    /**
+     * isLoading-флаг, который при true пропускает ввод в коллекцию
+     */
     static public boolean isLoading = false;
 
     public City(){
@@ -38,6 +43,10 @@ public class City implements Comparable<City>{
             this.standardOfLiving = Waiter.enumChoice("StandartOfLiving", StandardOfLiving.class, StandardOfLiving.values());
             this.coordinates = new Coordinates();
     }
+
+    /**
+     * Обновление полей города
+     */
     public void update() {
         System.out.println(
                 "Какое поле обновить?\n" +
@@ -67,21 +76,39 @@ public class City implements Comparable<City>{
            }
         System.out.println("Изменено!");
     }
+    /**
+     * @return Строковое представление города.
+     */
     public String toString() {
         return String.format("id %s: Название %s", id, name);
     }
+    /**
+     * @return id города
+     */
     public Integer getId(){
         return id;
     }
+    /**
+     * @return Имя города
+     */
     public String getName(){
         return name;
     }
+    /**
+     * @return Правителя города
+     */
     public  Human getGovernor(){
         return governor;
     }
+    /**
+     * Сравнивает города по населению
+     */
     public int compareTo(City c) {
         return Long.compare(this.population, c.population);
     }
+    /**
+     * @return статус столицы
+     */
     public Boolean getCapital(){
         return capital;
     }
