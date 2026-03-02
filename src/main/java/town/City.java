@@ -4,7 +4,7 @@ import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvRecurse;
 
 /**
- * Route class - главный класс коллекции
+ * City class - главный класс коллекции
  */
 public class City implements Comparable<City>{
     private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
