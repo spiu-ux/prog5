@@ -6,7 +6,9 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.List;
 
 /**
  * Класс для управления сохранением и загрузкой коллекции городов в/из CSV файл
@@ -26,25 +28,24 @@ public class FileManager {
         else {System.out.println("Не получилось использовать переменную окружения!!!!!! >:(");}
     }
     /**
-     * Записывает коллекцию городов в CSV файл
-     * Каждый город записывается как отдельная строка в CSV формате
-     * </p>
-     * @param cities коллекция городов для сохранения
-     * @throws RuntimeException если возникает ошибка ввода-вывода или несоответствие типов данных
-     * @see StatefulBeanToCsv
-     * @see StatefulBeanToCsvBuilder
-     * @see CsvDataTypeMismatchException
-     * @see CsvRequiredFieldEmptyException
+     * Записывает коллекцию городов в CSV файл с использованием построчной записи через {@link FileOutputStream}.
+     * Применяет цепочку потоков {@code FileOutputStream → OutputStreamWriter (UTF-8) → BufferedWriter}
+     * @param cities коллекция городов для сохранения в файл
+     * @throws RuntimeException при возникновении ошибок ввода-вывода или несоответствия типов данных
      */
     public static void writeCSV(ArrayDeque<City> cities) {
-        Writer writer = null;
-        try {
-            writer = new FileWriter(saveLocation);
-            StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
-            for (City c : cities){
-                beanToCsv.write(c);
+        try (
+                FileOutputStream fos = new FileOutputStream(saveLocation);
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+                BufferedWriter bw = new BufferedWriter(osw)
+        ) {
+            StatefulBeanToCsv<City> beanToCsv = new StatefulBeanToCsvBuilder<City>(bw)
+                    .withApplyQuotesToAll(false)
+                    .build();
+            for (City city : cities) {
+                beanToCsv.write(city);
             }
-            writer.close();
+            bw.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (CsvDataTypeMismatchException e) {
@@ -54,31 +55,38 @@ public class FileManager {
         }
     }
     /**
-     * Загружает коллекцию городов из CSV файла
-     * Метод устанавливает флаг {@link City#isLoading} в {@code true} для отключения
-     * интерактивного ввода при создании объектов
-     * После загрузки флаг сбрасывается в {@code false}.
-     * Загруженная коллекция устанавливается в {@link CollectionManager} через метод {@link CollectionManager#setCity(ArrayDeque)}.
-     * </p>
-     * @throws RuntimeException если файл не найден или возникает ошибка парсинга CSV
+     * Загружает коллекцию городов из CSV-файла
+     * Метод использует {@link FileReader} для чтения данных
+     * Перед загрузкой устанавливает флаг {@link City#isLoading} в {@code true}, чтобы отключить
+     * интерактивный ввод в конструкторах классов
+     * После завершения загрузки флаг сбрасывается в {@code false}.
+     * Если файл не найден, создаётся пустая коллекция без генерации исключения.
+     * @throws RuntimeException при ошибках ввода-вывода (кроме отсутствия файла)
+     * @see FileReader
      * @see CsvToBeanBuilder
      * @see City#isLoading
      * @see CollectionManager#setCity(ArrayDeque)
-     * @see java.io.BufferedReader
-     * @see java.io.FileReader
      */
-    public static void readCSV(){
+    public static void readCSV() {
         City.isLoading = true;
-    BufferedReader br;
-        try {
-            br = new BufferedReader(new FileReader(saveLocation));
-            ArrayDeque<City> beans = new ArrayDeque<>();
-            beans.addAll(new CsvToBeanBuilder(br)
-                    .withType(City.class).build().parse());
-            CollectionManager.setCity(beans);
+
+        try (
+                FileReader fr = new FileReader(saveLocation);
+                BufferedReader br = new BufferedReader(fr)
+        ) {
+            List<City> beans = new CsvToBeanBuilder<City>(br)
+                    .withType(City.class)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build()
+                    .parse();
+            CollectionManager.setCity(new ArrayDeque<>(beans));
+            //System.out.println("Загружено " + beans.size() + " городов из файла: " + saveLocation);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }finally {
+            System.out.println("Файл не найден " + saveLocation);
+            CollectionManager.setCity(new ArrayDeque<>());
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка чтения файла " + saveLocation + e.getMessage(), e);
+        } finally {
             City.isLoading = false;
         }
     }

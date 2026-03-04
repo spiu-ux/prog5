@@ -26,7 +26,8 @@ public class ExecuteScriptCommand implements Command{
      */
     public void execute(String[] args){
         StringBuilder text = new StringBuilder();
-        try (FileReader fr = new FileReader("scripts/" + args[0])) {
+        try (FileReader fr = new FileReader("script" +
+                "s/" + args[0])) {
             int i = fr.read();
             while(i != -1) {
                 text.append((char)i);
@@ -34,6 +35,8 @@ public class ExecuteScriptCommand implements Command{
             }
         } catch (IOException e) {
             System.out.println("Проблемы с файлом!!!!");
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Введите файл");
         }
         //System.out.println(text);
         Waiter.sc = new Scanner(text.toString());
