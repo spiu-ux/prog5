@@ -1,6 +1,7 @@
 package town;
 
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 /**
@@ -68,13 +69,13 @@ public class CollectionManager {
      * @see Human#equals(Object)
      */
     public static void printUniqueGovernor(){
-        HashMap<Integer, Human> dino = new HashMap<>();
+        HashMap<Integer, Human> uniqueGovernors= new HashMap<>();
         for(City c: cities){
-            Human human_t = c.getGovernor();
-            dino.put(human_t.hashCode(),human_t);
+            Human governor = c.getGovernor();
+            uniqueGovernors.put(governor.hashCode(),governor);
         }
-        System.out.println(dino.values());
-        for (Human h: dino.values())
+        System.out.println(uniqueGovernors.values());
+        for (Human h: uniqueGovernors.values())
             System.out.println(h);
         }
     /**
@@ -92,8 +93,8 @@ public class CollectionManager {
      * Обновляет поля города по идентификатору через ввод от пользователя
      * @param id идентификатор города для обновления
      */
-    public static void update_id(Integer id) {
-        City c = find_by_id(id);
+    public static void updateById(Integer id) {
+        City c = findById(id);
         if (c == null) {return;}
         c.update();
     }
@@ -102,7 +103,7 @@ public class CollectionManager {
      * @param id идентификатор города
      * @return найденный город или {@code null}, если город не найден
      */
-    private static City find_by_id(Integer id) {
+    private static City findById(Integer id) {
         for (City c: cities) {
             if (c.getId().equals(id)) {
                 return c;
@@ -115,7 +116,7 @@ public class CollectionManager {
      * Добавляет город в коллекцию, если его население больше всех существующих городов
      * @param newCity город для добавления
      */
-    public static void add_if_max(City newCity) {
+    public static void addIfMax(City newCity) {
         for (City c: cities) {
             if (newCity.compareTo(c) < 0) {
                 System.out.println("Город не был добавлен, он не является максимальным:(");
@@ -129,33 +130,22 @@ public class CollectionManager {
      * Удаляет все города из коллекции, у которых население меньше, чем у заданного города
      * @param newCity город для сравнения
      */
-    public static void remove_el(City newCity) {
-        HashSet<City> toRemove = new HashSet<>();
-        for (City c: cities) {
+    public static void removeIfLess(City newCity) {
+        //HashSet<City> toRemove = new HashSet<>(); не нужен, ничего не ломается)
+        for (City c : cities) {
             if (newCity.compareTo(c) > 0) {
-                toRemove.add(c);
+                cities.remove(c);
+                System.out.printf("Город '%s' удален.\n", c);
             }
         }
-        for (City c: toRemove) {
-            cities.remove(c);
-            System.out.printf("Город '%s' удален.\n", c);
-        }
-        toRemove.clear();
     }
     /**
      * Выводит города в порядке: сначала столицы, затем остальные города
      */
-    public static void desc_capital(){
-        ArrayDeque<City> cities_i = cities.clone();
-        for(City c: cities.clone()){
-            if(c.getCapital()){
-                System.out.println(c.getCapital());
-                cities_i.remove(c);
-            }
-        }
-        for(City c: cities_i) {
-                System.out.println(c.getCapital());
-        }
+    public static void sortByCapitalDescending() {
+        cities.stream()
+                .sorted(Comparator.comparing(City::getCapital).reversed())
+                .forEach(System.out::println);
     }
     /**
      * Возвращает коллекцию городов

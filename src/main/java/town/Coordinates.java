@@ -26,4 +26,15 @@ public class Coordinates {
         x = Waiter.getFloat("Координата х ", false);
         y = Waiter.getDouble("Координата y ");
     }
+    public boolean validate() {
+        if (Float.isNaN(x)) {
+            System.err.println(" Coordinates: X не может быть null");
+            return false;
+        }
+        if (Double.isNaN(y)) {
+            System.err.println("Coordinates: Y не может быть null");
+            return false;
+        }
+        return true;
+    }
 }

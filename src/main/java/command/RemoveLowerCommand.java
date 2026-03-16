@@ -8,6 +8,6 @@ public class RemoveLowerCommand implements Command{
         return "Удалите все элементы, размеры которых меньше входных";
     }
     public void execute(String... args) {
-        CollectionManager.remove_el(new City());
+        CollectionManager.removeIfLess(new City());
     }
 }

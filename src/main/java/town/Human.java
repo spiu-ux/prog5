@@ -1,6 +1,8 @@
 package town;
 
 import com.opencsv.bean.CsvDate;
+
+import java.time.LocalDate;
 import java.util.Objects;
 import static town.City.isLoading;
 /**
@@ -13,14 +15,14 @@ public class Human {
     /**
      * Создаёт объект человека.
      * При флаге isLoading = {@code true} пропускает ввод (используется при загрузке из файла).
-     * @see Waiter#getInteger(String)
+     * @see Waiter#getInteger(String,Integer)
      * @see Waiter#getDate()
      */
     public Human(){
         if(isLoading) {
             return;
         }
-        height = Waiter.getInteger("Рост");
+        height = Waiter.getInteger("Рост",210);
         birthday = Waiter.getDate();
     }
     /**
@@ -36,5 +38,17 @@ public class Human {
      */
     public String toString() {
         return String.format("Человек %s: %s", height, birthday);
+    }
+
+    public boolean validate() {
+        if (birthday.isAfter(LocalDate.now())) {
+            System.err.println("Human: дата рождения из будущего");
+            return false;
+        }
+        if (height <= 0 || height > 210) {
+            System.err.println("Human: рост должен быть от 1 до 210 см");
+            return false;
+        }
+        return true;
     }
 }

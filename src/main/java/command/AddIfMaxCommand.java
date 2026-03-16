@@ -8,6 +8,6 @@ public class AddIfMaxCommand implements Command{
         return "Добавьте город, если он больше, чем все остальные маршруты";
     }
     public void execute(String[] args) {
-        CollectionManager.add_if_max(new City());
+        CollectionManager.addIfMax(new City());
     }
 }

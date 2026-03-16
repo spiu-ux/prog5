@@ -7,6 +7,6 @@ public class PrintFieldDescendingCapitalCommand implements Command{
         return "Вывести значения поля capital всех элементов в порядке убывания";
     }
     public void execute(String[] args){
-        CollectionManager.desc_capital();
+        CollectionManager.sortByCapitalDescending();
     }
 }

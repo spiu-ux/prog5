@@ -49,18 +49,25 @@ public class Waiter {
      * Запрашивает у пользователя целое число больше 0.
      * @param name название поля для вывода пользователю
      * @return введённое целое число
+     * @param maxValue максимальное допустимое значение или {@code null} если ограничения нет
+     * @throws NumberFormatException если пользователь вводит нечисловое значение
      */
-    public static Integer getInteger(String name){
+    public static Integer getInteger(String name,Integer maxValue){
         Integer input;
         System.out.println("Введите число > 0 "+ name + ":" );
         while (true) {
             System.out.print(">> ");
             try{
                 input = Integer.parseInt(sc.nextLine());
-                if (input>0){
-                    return input;
+                if (input<=0) {
+                    System.out.println("Введите число > 0:");
+                    continue;
                 }
-                System.out.println("Введите число > 0:");
+                if (maxValue != null && input > maxValue) {
+                    System.out.println("Значение не должно превышать " + maxValue + "!!!!!");
+                    continue;
+                }
+                    return input;
             }catch (NumberFormatException e){
                 System.out.println("Введите число!!!!!!");
             }
@@ -71,11 +78,16 @@ public class Waiter {
      * @return введённая дата
      */
     public static java.time.LocalDate getDate(){
+        java.time.LocalDate today = java.time.LocalDate.now();
        System.out.println("Введите дату (ГГГГ-ММ-ДД): ");
        while (true){
            System.out.print(">> ");
        try {
-           java.time.LocalDate input = java.time.LocalDate.parse(sc.nextLine());
+           java.time.LocalDate input = java.time.LocalDate.parse(sc.nextLine().trim());
+           if (input.isAfter(today)) {
+               System.out.println("Дата введена не правильно, дата не может быть из будущего!!!! ");
+               continue;
+           }
            return input;
        } catch (DateTimeParseException e) {
            System.out.println("Введите дату (ГГГГ-ММ-ДД)!!!!!!");

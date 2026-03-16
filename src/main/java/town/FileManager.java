@@ -8,6 +8,8 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -69,23 +71,48 @@ public class FileManager {
      */
     public static void readCSV() {
         City.isLoading = true;
-
-        try (
-                FileReader fr = new FileReader(saveLocation);
-                BufferedReader br = new BufferedReader(fr)
-        ) {
-            List<City> beans = new CsvToBeanBuilder<City>(br)
+        Integer maxCount=0;
+        List<City> validCities = new ArrayList<>();
+        HashSet<Integer> idSet = new HashSet<>();
+        int skippedCount = 0;
+        try (FileReader fr = new FileReader(saveLocation);
+             BufferedReader br = new BufferedReader(fr)) {
+            List<City> parsedCities = new CsvToBeanBuilder<City>(br)
                     .withType(City.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build()
                     .parse();
-            CollectionManager.setCity(new ArrayDeque<>(beans));
-            //System.out.println("Загружено " + beans.size() + " городов из файла: " + saveLocation);
+            for (City city : parsedCities) {
+                if (city != null && city.validate()) {
+                    if(idSet.contains(city.getId())){
+                        continue;
+                    }
+                    idSet.add(city.getId());
+                    validCities.add(city);
+                    if(maxCount < city.getId()){
+                        maxCount = city.getId();
+                    }
+                } else {
+                    skippedCount++;
+                    System.err.println("Пропущена некорректная запись: " +
+                            (city != null ? city.getName() : "null") +
+                            " в файле " + saveLocation);
+                }
+            }
+            if (!idSet.isEmpty()){
+                City.setCount(maxCount+1);
+            }
+            CollectionManager.setCity(new ArrayDeque<>(validCities));
+            System.out.println("Загружено " + validCities.size() + " городов из файла: " + saveLocation);
+            if (skippedCount > 0) {
+                System.out.println("Пропущено " + skippedCount + " некорректных записей.");
+            }
         } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден " + saveLocation);
+            System.out.println("Файл не найден: " + saveLocation + ". Создана пустая коллекция.");
             CollectionManager.setCity(new ArrayDeque<>());
         } catch (IOException e) {
-            throw new RuntimeException("Ошибка чтения файла " + saveLocation + e.getMessage(), e);
+            System.err.println("Ошибка чтения файла " + saveLocation + ": " + e.getMessage());
+            throw new RuntimeException("Не удалось загрузить данные из файла", e);
         } finally {
             City.isLoading = false;
         }

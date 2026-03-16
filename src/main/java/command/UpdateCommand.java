@@ -17,6 +17,6 @@ public class UpdateCommand implements Command{
             System.out.println("Укажите id города!!!!!");
             return;
         }
-        CollectionManager.update_id(id);
+        CollectionManager.updateById(id);
     }
 }

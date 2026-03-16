@@ -1,7 +1,10 @@
 package town;
 
 import com.opencsv.bean.CsvDate;
+import com.opencsv.bean.CsvIgnore;
 import com.opencsv.bean.CsvRecurse;
+
+import java.time.LocalDateTime;
 
 /**
  * City class - главный класс коллекции
@@ -21,7 +24,8 @@ public class City implements Comparable<City>{
     private StandardOfLiving standardOfLiving; //Поле не может быть null
     @CsvRecurse
     private Human governor; //Поле не может быть null
-    static Integer count = 0;
+    @CsvIgnore
+    static Integer count = 1;
     /**
      * isLoading-флаг, который при true пропускает ввод в коллекцию
      */
@@ -61,7 +65,7 @@ public class City implements Comparable<City>{
                         "9. Губернатор");
         int n = 0;
         while(n<1||n>9){
-            n=Waiter.getInteger("Какой id");
+            n=Waiter.getInteger("Какой id",null);
         }
            switch (n) {
                case 1 -> this.name = Waiter.getString("Имя");
@@ -80,7 +84,17 @@ public class City implements Comparable<City>{
      * @return Строковое представление города.
      */
     public String toString() {
-        return String.format("id %s: Название %s", id, name);
+        return String.format("id: %d\n" +
+                        "name: '%s'\n" +
+                        "creationDate: %s\n" +
+                        "area: %.2f\n" +
+                        "population: %d\n" +
+                        "metersAboveSeaLevel: %.1f m\n" +
+                        "capital: %s\n" +
+                        "government: %s\n" +
+                        "standardOfLiving: %s\n", this.id, this.name, this.creationDate,this.area,this.population,
+               this.metersAboveSeaLevel,this.capital,this.government,
+               this.standardOfLiving);
     }
     /**
      * @return id города
@@ -112,4 +126,43 @@ public class City implements Comparable<City>{
     public Boolean getCapital(){
         return capital;
     }
+    public static void setCount(Integer newCount){
+        count=newCount;
+    }
+        /**
+         * Валидирует объект города.
+         * @return {@code true}, если все поля корректны
+         */
+        public boolean validate() {
+            if (id == null || id <= 0) {
+                System.err.println("Неверный ID = " + id);
+                return false;
+            }
+            if (name == null || name.trim().isEmpty()) {
+                System.err.println("Город " + id + ": пустое название");
+                return false;
+            }
+            if (!coordinates.validate()){
+                System.err.println("Город " + id + ": неверные координаты");
+                return false;
+            }
+            if (creationDate != null && creationDate.isAfter(LocalDateTime.now())){
+                System.err.println("Город " + id + ": дата создания из будущего");
+                return false;
+            }
+            if (area <= 0) {
+                System.err.println("Город " + id + ": площадь должна быть > 0");
+                return false;
+            }
+            if (population == null || population < 0) {
+                System.err.println("Город " + id + ": неверное население");
+                return false;
+            }
+            if (!governor.validate() && governor == null) {
+                System.err.println("Город " + id + ": неверные данные правителя");
+                return false;
+            }
+            return true;
+        }
+
 }
