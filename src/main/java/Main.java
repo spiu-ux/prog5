@@ -1,6 +1,4 @@
 import command.Invoker;
-
-import town.CollectionManager;
 import town.FileManager;
 import town.Waiter;
 
@@ -14,10 +12,10 @@ public class Main {
         Scanner sc = Waiter.sc;
         FileManager.readCSV();
         while (true) {
+            try{
             System.out.print(">> ");
             String[] data = sc.nextLine().split(" ");
             String  commandName = data[0];
-            try{
                 Invoker.executeCommand(commandName, Arrays.copyOfRange(data,1, data.length));
             } catch (NullPointerException e){
                 System.out.println("Такой команды нет, попробуйте 'help'");
