@@ -1,9 +1,12 @@
-package town;
+package ManagerServ;
+
+import town.City;
+import town.Human;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+
 /**
  * Класс, ответственный за все изменения в коллекции
  */
